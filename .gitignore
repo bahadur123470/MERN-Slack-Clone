@@ -1,0 +1,41 @@
+# Node.js
+node_modules/
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+
+# Build artifacts
+build/
+dist/
+out/
+
+# React specific
+client/build/
+client/node_modules/
+client/.env
+
+# MongoDB specific (if using local database files)
+data/db/
+logs/
+dump/
+
+# macOS specific
+.DS_Store
+.Trashes
+.Spotlight-V100
+.TemporaryItems
+.fseventsd
+
+# IDE/Editor specific (example for VS Code)
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.idea/
+
+# Logs
+*.log
+
+# Thumbnails
+.thumbnails/
