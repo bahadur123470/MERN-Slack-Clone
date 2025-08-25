@@ -3,10 +3,13 @@ import React from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 import HomePage from './pages/HomePage'
 import AuthPage from './pages/AuthPage'
+import toast from 'react-hot-toast'
 
 const App = () => {
   return (
     <>
+    {/* <button onClick={ () => toast.success("Congrats 🎉") }>success</button> */}
+    {/* <button onClick={ () => toast.error("Congrats 🎉") }>success</button> */}
 
       <SignedIn >
         <Routes>
