@@ -1,15 +1,17 @@
-import { StrictMode } from 'react'
+import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { ClerkProvider } from '@clerk/clerk-react'
 // import { BrowserRouter} from 'react-router'
 import {
-  createBrowserRouter,
-  createRoutesFromChildren,
-  matchRoutes,
+  Routes,
+  Route,
+  BrowserRouter,
   useLocation,
   useNavigationType,
+  createRoutesFromChildren,
+  matchRoutes,
 } from "react-router";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster} from 'react-hot-toast'
@@ -25,7 +27,7 @@ if (!PUBLISHABLE_KEY) {
 }
 
 Sentry.init({
-  dsn: "",
+  dsn: "https://7981a4a943746157470be7cba3380c50@o4509892645027840.ingest.us.sentry.io/4509906242502656",
   integrations: [
     Sentry.reactRouterV7BrowserTracingIntegration({
       useEffect: React.useEffect,
