@@ -14,8 +14,8 @@ export const useStreamChat = () => {
     //  Fetch the Stream token using React Query
     const {
         data: tokenData,
-        isLoading: tokenLoading,
-        error: tokenError,
+        isLoading,
+        error,
     } = useQuery({
         queryKey: ["streamToken"],
         queryFn: getStreamToken, 
@@ -71,5 +71,5 @@ export const useStreamChat = () => {
 
     }, [tokenData?.token, user?.id]);
 
-    return { chatClient, isLoading: tokenLoading, error: tokenError}
+    return { chatClient, isLoading, error}
 }
