@@ -1,8 +1,8 @@
 import axios from "axios"
 
-const BASE_URL = import.meta.env.MODE === "development" ? 
-"http://localhost:5000/" : 
-"https://mern-slack-backend-mu.vercel.app/"
+const BASE_URL = import.meta.env.MODE === "development" 
+? "http://localhost:5000/" 
+: "https://mern-slack-backend-mu.vercel.app/"
 
 export const axiosInstance = axios.create({
     baseURL: BASE_URL,

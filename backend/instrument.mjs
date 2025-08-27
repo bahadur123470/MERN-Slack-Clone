@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node"
+import * as Sentry from "@sentry/node";
 import { ENV } from "./src/config/env.js";
 
 Sentry.init({

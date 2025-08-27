@@ -1,8 +1,8 @@
-import React, { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import { ClerkProvider } from '@clerk/clerk-react'
+import React, { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App.jsx';
+import { ClerkProvider } from '@clerk/clerk-react';
 // import { BrowserRouter} from 'react-router'
 import {
   Routes,
@@ -13,10 +13,10 @@ import {
   createRoutesFromChildren,
   matchRoutes,
 } from "react-router";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster} from 'react-hot-toast'
-import AuthProvider from './providers/AuthProvider.jsx'
-import * as Sentry from "@sentry/react"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster} from 'react-hot-toast';
+import AuthProvider from './providers/AuthProvider.jsx';
+import * as Sentry from '@sentry/react';
 
 const queryClient = new QueryClient()
 
@@ -48,7 +48,7 @@ createRoot(document.getElementById('root')).render(
         <AuthProvider>
           <App />
         </AuthProvider>
-        <Toaster position='bottom-right'/>
+        <Toaster position='top-right'/>
       </QueryClientProvider>
       </BrowserRouter>
     </ClerkProvider>

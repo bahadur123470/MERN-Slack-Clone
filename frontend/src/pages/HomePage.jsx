@@ -1,87 +1,63 @@
-import React, { useEffect, useState } from 'react'
-import { UserButton } from '@clerk/clerk-react'
-import { useSearchParams } from "react-router"
-import { useStreamChat } from '../hooks/useStreamChat'
-import PageLoader from '../components/PageLoader'
-import "../styles/stream-chat-theme.css"
-import { Chat, Channel, ChannelList, MessageList, Thread, Window, MessageInput} from "stream-chat-react"
-import { PlusIcon } from 'lucide-react'
-import CreateChannelModal from '../components/CreateChannelModal.jsx'
+import { useEffect, useState } from "react";
+import CreateChannelModal from "../components/CreateChannelModal";
+import CustomChannelPreview from "../components/CustomChannelPreview";
+import UsersList from "../components/UsersList";
+// import CustomChannelHeader from "../components/CustomChannelHeader";
+import { Channel, ChannelHeader, ChannelList, Chat, MessageInput, MessageList, Thread, Window, useChatContext, } from "stream-chat-react";
 
-const HomePage = () => {
-
+const HomePage = ({ chatClient }) => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [activeChannel, setActiveChannel] = useState(null);
-    const [searchParams, setSearchParams] = useSearchParams();
-    const {chatClient, isLoading, error} = useStreamChat()
 
     useEffect(() => {
-        if(chatClient){
-            const channelId = searchParams.get("channel")
-            if(channelId){
-                const channel = chatClient.channel("messaging", channelId)
-                setActiveChannel(channel)
-            }
-        }
-    }, [chatClient, searchParams])
+        if (!chatClient) return;
+    }, [chatClient]);
 
-    // Handle loading and error states
-    if(error) return <p>Something went wrong</p>
-    if(isLoading || !chatClient) return <PageLoader/>
+    if (!chatClient) return <p>Loading...</p>;
+    if (error) return <p>Something went wrong...</p>;
 
     return (
-        <>
-        <div className='chat-wrapper'>
-            <Chat client={chatClient}>
-                <div className='chat-container'>
-                    {/* Left sidebar */}
-                    <div className='str-chat_channel-list'>
-                        <div className='team-channel-list'>
-                            {/* Header  */}
-                            <div className='team-channel-list_header gap-4'>
-                                <div className='brand-container'>
-                                    <img src="/logo.png" alt="Logo" className='brand-logo' />
-                                    <span className='brand-name'>Slack</span>
-                                </div>
-                                <div className='user-button-wrapper'>
-                                    <UserButton  />
-                                </div>
-                            </div>
-                            {/* Channel List */}
-                            <div className="team-channel-list_content">
-                                <div className="create-channel-section">
-                                    <button onClick={() => setIsCreateModalOpen(true)} className='create-channel-btn'>
-                                        <PlusIcon className='size-4' />
-                                        <span>Create Channel</span>
-                                    </button>
-                                </div>
-                                {/* Channel List */}
-
-                            </div>
-                        </div>
-                    </div>
-                    {/* Right Container */}
-                    <div className="chat-main">
-                        <Channel channel={activeChannel}>
-                            <Window>
-                                {/* <CustomChannelHeader /> */}
-                                <MessageList />
-                                <MessageInput focus={true} />
-                            </Window>
-                            <Thread />
-                        </Channel>
-                    </div>
+    <Chat client={chatClient} theme="team dark">
+        <div className="app-wrapper">
+            {/* Sidebar */}
+            <div className="str-chat__channel-list">
+                <div className="team-channel-list__header">
+                    <span className="brand-name">Slack</span>
                 </div>
-                {isCreateModalOpen && (
-                    <CreateChannelModal
-                        // isOpen={isCreateModalOpen}
-                        onClose={() => setIsCreateModalOpen(false)}
-                    />    
-                )}
-            </Chat>
-        </div>
-        </>
-    )
-}
 
-export default HomePage
+                {/* Channel List */}
+                <ChannelList
+                filters={{ members: { $in: [chatClient?.user?.id] } }}
+                Preview={(props) => (
+                <CustomChannelPreview
+                {...props}
+                onCreateChannel={() => setIsCreateModalOpen(true)}
+                />
+                )}
+                />
+
+                {/* Users List */}
+                <UsersList onCreateChannel={() => setIsCreateModalOpen(true)} />
+            </div>
+            {/* Chat Window */}
+            {/* <Channel>
+                <Window>
+                    <CustomChannelHeader />
+                    <MessageList />
+                    <MessageInput focus={true} />
+                </Window>
+                <Thread />
+            </Channel> */}
+        </div>
+
+        {/* Create Channel Modal */}
+        {isCreateModalOpen && (
+            <CreateChannelModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            />
+        )}
+    </Chat>
+    );
+};
+
+export default HomePage;

@@ -1,7 +1,10 @@
 import { StreamChat } from "stream-chat"
 import { ENV } from "./env.js"
 
-const streamClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET)
+const streamClient = StreamChat.getInstance(
+    ENV.STREAM_API_KEY,
+    ENV.STREAM_API_SECRET
+); 
 
 export const upsertStreamUser = async (userData) => {
     try {
@@ -12,7 +15,7 @@ export const upsertStreamUser = async (userData) => {
         console.log("Error upserting stream user", error);
         throw error; // Throw the error after logging it
     }
-}
+};
 
 export const deleteStreamUser = async (userId) => {
     try {
@@ -22,14 +25,21 @@ export const deleteStreamUser = async (userId) => {
         console.log("Error deleting stream user", error);
         throw error; // Throw the error after logging it
     }
-}
+};
 
 export const generateStreamToken = (userId) => {
     try {
         const userIdString = userId.toString()
-        return streamClient.createToken(userIdString)
+        return streamClient.createToken(userIdString);
     } catch (error) {
         console.log("Error generating stream token", error)
-        return null
+        return null;
     }
-}
+};
+
+export const addUserToPublicChannels = async (newUserId) => {
+    const publicChannels = await streamClient.queryChannels({ discoverable: true });
+    for (const channel of publicChannels) {
+    await channel.addMembers([newUserId]);
+    }
+};
