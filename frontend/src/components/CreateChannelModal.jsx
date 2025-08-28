@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useChatContext } from "stream-chat-react";
-import toast from "react-hot-toast";
 import * as Sentry from "@sentry/react";
+import toast from "react-hot-toast";
 import { AlertCircleIcon, HashIcon, LockIcon, UsersIcon, XIcon } from "lucide-react";
 
 const CreateChannelModal = ({ onClose }) => {
@@ -11,14 +11,14 @@ const CreateChannelModal = ({ onClose }) => {
     const [description, setDescription] = useState("");
     const [isCreating, setIsCreating] = useState(false);
     const [error, setError] = useState("");
-    const [users, setUsers] = useState([]); // selected users for private channel
-    const [selectedMembers, setSelectedMembers] = useState([]); // selected users for private channel
-    const [loadingUsers, setLoadingUsers] = useState(false); // loading state for user search
-    const [_, setSearchParams] = useSearchParams(); // search params for user search
+    const [users, setUsers] = useState([]);
+    const [selectedMembers, setSelectedMembers] = useState([]);
+    const [loadingUsers, setLoadingUsers] = useState(false);
+    const [_, setSearchParams] = useSearchParams();
 
     const { client, setActiveChannel } = useChatContext();
 
-  //  fetch users for member selection
+    // fetch users for member selection
     useEffect(() => {
         const fetchUsers = async () => {
             if (!client?.user) return;
@@ -29,14 +29,13 @@ const CreateChannelModal = ({ onClose }) => {
                     { name: 1 },
                     { limit: 100 }
                 );
-                // filter out system/recording users
                 const usersOnly = response.users.filter((user) => !user.id.startsWith("recording-"));
                 setUsers(usersOnly || []);
             } catch (error) {
-                console.log("Error fetching users:", error);
+                console.log("Error fetching users");
                 Sentry.captureException(error, {
-                    tags: { Component: "CreateChannelModal" },
-                    extra: { context: "fetching users for channel" },
+                    tags: { component: "CreateChannelModal" },
+                    extra: { context: "fetch_users_for_channel" },
                 });
                 setUsers([]);
             } finally {
@@ -46,25 +45,25 @@ const CreateChannelModal = ({ onClose }) => {
         fetchUsers();
     }, [client]);
 
-  //  reset the form on open
-    useEffect(() => {
-        setChannelName("");
-        setDescription("");
-        setChannelType("public");
-        setError("");
-        setSelectedMembers([]);
-    }, []);
+    // reset the form on open: this is not needed, we just deleted it later in the video
+    // useEffect(() => {
+    //   setChannelName("");
+    //   setDescription("");
+    //   setChannelType("public");
+    //   setError("");
+    //   setSelectedMembers([]);
+    // }, []);
 
-  //  auto select all users for public channel
+    // auto-select all users for public channels
     useEffect(() => {
         if (channelType === "public") setSelectedMembers(users.map((u) => u.id));
         else setSelectedMembers([]);
     }, [channelType, users]);
 
     const validateChannelName = (name) => {
-        if (!name.trim()) return "Channel name is required.";
-        if (name.length < 3) return "Channel name must be at least 3 characters.";
-        if (name.length > 22) return "Channel name must be less than 22 characters.";
+        if (!name.trim()) return "Channel name is required";
+        if (name.length < 3) return "Channel name must be at least 3 characters";
+        if (name.length > 22) return "Channel name must be less than 22 characters";
         return "";
     };
 
@@ -76,7 +75,7 @@ const CreateChannelModal = ({ onClose }) => {
 
     const handleMemberToggle = (id) => {
         if (selectedMembers.includes(id)) {
-            setSelectedMembers(selectedMembers.filter((uid) => uid !== id));
+        setSelectedMembers(selectedMembers.filter((uid) => uid !== id));
         } else {
         setSelectedMembers([...selectedMembers, id]);
         }
@@ -90,37 +89,43 @@ const CreateChannelModal = ({ onClose }) => {
         setIsCreating(true);
         setError("");
         try {
-        // MY CHANNEL NAME !$#7  ==> my-channel-name-1
-            const channelId = channelName
+        // MY COOL CHANNEL !#1 => my-cool-channel-1
+        const channelId = channelName
             .toLowerCase()
             .trim()
             .replace(/\s+/g, "-")
             .replace(/[^a-z0-9-_]/g, "")
             .slice(0, 20);
-        //  prepare the channel data
-            const channelData = {
-                name: channelName.trim(),
-                created_by_id: client.user.id,
-                members: [client.user.id, ...selectedMembers],
-            };
-            if (description) channelData.description = description;
-            if (channelType === "private") {
-                channelData.private = true;
-                channelData.visibility = "private";
-            } else {
-                channelData.visibility = "public";
-                channelData.discoverable = true;
-            }
-            const channel = client.channel("messaging", channelId, channelData);
-            await channel.watch();
-            setActiveChannel(channel);
-            setSearchParams({ channel: channelId });
-            toast.success(`Channel "${channelName}" created successfully!`);
-            onClose();
+
+        // prepare the channel data
+
+        const channelData = {
+            name: channelName.trim(),
+            created_by_id: client.user.id,
+            members: [client.user.id, ...selectedMembers],
+        };
+
+        if (description) channelData.description = description;
+        if (channelType === "private") {
+            channelData.private = true;
+            channelData.visibility = "private";
+        } else {
+            channelData.visibility = "public";
+            channelData.discoverable = true;
+        }
+
+        const channel = client.channel("messaging", channelId, channelData);
+        await channel.watch();
+
+        setActiveChannel(channel);
+        setSearchParams({ channel: channelId });
+
+        toast.success(`Channel "${channelName}" created successfully!`);
+        onClose();
         } catch (error) {
-            console.log("Error creating the channel", error);
+        console.log("Error creating the channel", error);
         } finally {
-            setIsCreating(false);
+        setIsCreating(false);
         }
     };
     return (
@@ -132,7 +137,7 @@ const CreateChannelModal = ({ onClose }) => {
                     <XIcon className="w-5 h-5" />
                 </button>
             </div>
-            {/* Form */}
+            {/* form */}
             <form onSubmit={handleSubmit} className="create-channel-modal__form">
                 {error && (
                     <div className="form-error">
@@ -140,8 +145,7 @@ const CreateChannelModal = ({ onClose }) => {
                         <span>{error}</span>
                     </div>
                 )}
-                
-                {/* channel name */}
+                {/* Channel name */}
                 <div className="form-group">
                     <div className="input-with-icon">
                         <HashIcon className="w-4 h-4 input-icon" />
@@ -156,7 +160,7 @@ const CreateChannelModal = ({ onClose }) => {
                         maxLength={22}
                         />
                     </div>
-                    {/* Channel id preview  */}
+                    {/* channel id  preview */}
                     {channelName && (
                         <div className="form-hint">
                             Channel ID will be: #
@@ -167,9 +171,9 @@ const CreateChannelModal = ({ onClose }) => {
                         </div>
                     )}
                 </div>
-                {/* Channel Type */}
+                {/* CHANNEL TYPE */}
                 <div className="form-group">
-                    <label>Channel Type</label>
+                    <label>Channel type</label>
                     <div className="radio-group">
                         <label className="radio-option">
                             <input
@@ -206,7 +210,7 @@ const CreateChannelModal = ({ onClose }) => {
                 {/* add members component */}
                 {channelType === "private" && (
                     <div className="form-group">
-                        <label>Add Members</label>
+                        <label>Add members</label>
                         <div className="member-selection-header">
                             <button
                             type="button"
@@ -219,11 +223,11 @@ const CreateChannelModal = ({ onClose }) => {
                             </button>
                             <span className="selected-count">{selectedMembers.length} selected</span>
                         </div>
-                        <div className="member-list">
+                        <div className="members-list">
                             {loadingUsers ? (
                                 <p>Loading users...</p>
                             ) : users.length === 0 ? (
-                            <p>No user found</p>
+                            <p>No users found</p>
                             ) : (
                                 users.map((user) => (
                                 <label key={user.id} className="member-item">
@@ -281,4 +285,5 @@ const CreateChannelModal = ({ onClose }) => {
     </div>
     );
 };
-export default CreateChannelModal;
+
+    export default CreateChannelModal;
