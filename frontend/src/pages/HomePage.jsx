@@ -5,13 +5,13 @@ import { useStreamChat } from "../hooks/useStreamChat";
 import PageLoader from "../components/PageLoader";
 
 import {
-  Chat,
-  Channel,
-  ChannelList,
-  MessageList,
-  MessageInput,
-  Thread,
-  Window,
+    Channel,
+    ChannelList,
+    MessageList,
+    MessageInput,
+    Thread,
+    Window,
+    Chat,
 } from "stream-chat-react";
 
 import "../styles/stream-chat-theme.css";
@@ -53,8 +53,8 @@ const HomePage = () => {
                         {/* HEADER */}
                         <div className="team-channel-list__header gap-4">
                             <div className="brand-container">
-                                <img src="/logo.png" alt="Logo" className="brand-logo" />
-                                <span className="brand-name">Slap</span>
+                                <img src="/slack-logo.png" alt="Logo" className="brand-logo" />
+                                <span className="brand-name">Slack</span>
                             </div>
                             <div className="user-button-wrapper">
                             <UserButton />
