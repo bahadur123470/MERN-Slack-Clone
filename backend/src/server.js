@@ -12,7 +12,7 @@ import * as Sentry from "@sentry/node"
 const app = express()
 
 app.use(express.json())
-app.use(cors({origin: ENV.CLIENT_URL, credentials: true}))
+app.use(cors({origin: "https://mern-slack-frontend.vercel.app/", credentials: true}))
 app.use(clerkMiddleware())
 
 app.get("/customSentryError", (req, res) => {
